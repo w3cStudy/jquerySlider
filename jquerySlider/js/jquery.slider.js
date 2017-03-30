@@ -10,7 +10,7 @@
             delay: 3,//unit:seconds
             startIndex: 0,
             hideClickBar: true,
-            clickBarRadius: 5,//unit:px
+            clickBarRadius: 10,//unit:px
             hideBottomBar: false,
             width: null,
             height: null
@@ -22,7 +22,7 @@
         var order_by = 'ASC';
         var init = function () {
             li_height = settings.height ? settings.height : $lis.first().height();
-            li_width = settings.width ? settings.width : $lis.first().height();
+            li_width = settings.width ? settings.width : $lis.first().width();
             //$lis.css({})
             wrapper.css({width: li_width + 'px', height: li_height + 'px'});
             $lis.css({width: li_width + 'px', height: li_height + 'px'});
@@ -33,19 +33,19 @@
             }
 
             $ul.find('li:eq('+settings.startIndex+')').addClass("active");
-            if (settings.hideBottomBar) {
+            if (!settings.hideBottomBar) {
                 var tips = $(' <div class="tips"></div>').css('opacity',0.6).appendTo(wrapper);
                 var title=$('<div class="title"></div>').html(function () {
                     var active=$ul.find('li.active').find('a'),text=active.attr('title'),href=active.attr('href');
                     return $('<a></a>').attr('href',href).text(text);
                 }).appendTo(tips);
 
-                var  nums=$('<div class="nums"></div>').hide().appendTo(wrapper);
+                var  nums=$('<div class="nums"></div>').hide().appendTo(tips);
                 $lis.each(function (index,ele) {
-                    var a=$(this).find(a),text=a.attr('title'),href=a.attr('href'),css='';
-                    i==settings.startIndex&&(css='active');
-                    $('<a></a>').attr('href',href).text(text).addClass(css).css('borderRadius',settings.borderRadius+'px').mouseover(function(){
-                           $(this).addcss('active').sibling().removeClass('active');
+                    var a=$(ele).find('a'),text=a.attr('title'),href=a.attr('href'),css='';
+                    index==settings.startIndex&&(css='active');
+                    $('<a></a>').attr('href',href).text(text).addClass(css).css('borderRadius',settings.clickBarRadius+'px').mouseover(function(){
+                           $(this).addClass('active').siblings().removeClass('active');
                             start();
                             stop();
                     }).appendTo(nums);
@@ -54,10 +54,11 @@
 
                 if(settings.hideClickBar){
                     tips.hover(function () {
-                        nums.animated({top:'0px'},'fast');
+                        nums.animate({top:'0px'},'fast');
                     },function () {
-                        nums.animated({top:tips.height+'px'},'fast');
+                        nums.animate({top:tips.height()+'px'},'fast');
                     })
+                    nums.show().delay(2000).animate({top: tips.height()+'px'}, 'fast');
                 }else{
                     nums.show();
                 }
@@ -75,7 +76,6 @@
                 offset=li_height*index*-1;
                 param={'top':offset+'px'};
             }
-            debugger;
             wrapper.find('.nums').find('a:eq('+index+')').addClass('active').siblings().removeClass('active');
             wrapper.find('.title').find('a').attr('href',active_a.attr('href')).text(active_a.attr('title'));
            // ul.animated(param)
@@ -93,7 +93,7 @@
                         active.prev().addClass('active');
                     }else{
                         order_by='ASC';
-                        active.next().addcss('active');
+                        active.next().addClass('active');
                     }
                 }
             })
